@@ -17,7 +17,7 @@ from flask import Flask, render_template, Response
 from camera import VideoCamera
 
 app = Flask(__name__)
-
+vid = VideoCamera()
 
 @app.route('/')
 def index():
@@ -33,7 +33,6 @@ def gen(camera):
 
 @app.route('/video_feed')
 def video_feed():
-    vid = VideoCamera()
     return Response(gen(vid),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
