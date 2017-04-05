@@ -6,7 +6,7 @@ class VideoCamera(object):
         # Using OpenCV to capture from device 0. If you have trouble capturing
         # from a webcam, comment the line below out and use a video file
         # instead.
-        self.video = PiVideoStream(resolution=self.resolution, framerate=self.framerate)
+        self.video = PiVideoStream(resolution=(1280,720), framerate=30)
         self.video.start()
         # If you decide to use video.mp4, you must have this file in the folder
         # as the main.py.
