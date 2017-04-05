@@ -7,7 +7,8 @@ class VideoCamera(object):
         # Using OpenCV to capture from device 0. If you have trouble capturing
         # from a webcam, comment the line below out and use a video file
         # instead.
-        self.video = PiVideoStream(resolution=(1280, 720), framerate=30)
+        # resolution=(1280, 720), framerate=30
+        self.video = PiVideoStream()
         self.video.start()
         # If you decide to use video.mp4, you must have this file in the folder
         # as the main.py.
@@ -17,7 +18,7 @@ class VideoCamera(object):
         self.video.stop()
 
     def get_frame(self):
-        success, image = self.video.read()
+        image = self.video.read()
         # We are using Motion JPEG, but OpenCV defaults to capture raw images,
         # so we must encode it into JPEG in order to correctly display the
         # video stream.
