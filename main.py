@@ -10,11 +10,11 @@ from flask.ext.classy import FlaskView, route
 
 from imutils.video.pivideostream import PiVideoStream
 
-print(__name__)
 
 class StreamingAndWebApi(object):
     def __init__(self):
         self.app = Flask(__name__)
+        print(__name__)
         self.WebApiView.register(self.app)
         self.app.run(host='0.0.0.0', port=5000, debug=True)
 
