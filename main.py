@@ -5,7 +5,7 @@
 # RESTful!
 
 import cv2
-from flask import Flask, Response
+from flask import Flask, Response, render_template
 from flask.ext.classy import FlaskView, route
 
 from imutils.video.pivideostream import PiVideoStream
@@ -21,6 +21,10 @@ class StreamingAndWebApi(object):
         def __init__(self):
             super(StreamingAndWebApi.WebApiView, self).__init__()  # this is python 2 so ...
             self.streamingBuffer = StreamingBuffer.getInstance()
+
+        @route('/')
+        def index(self):
+            return render_template('index.html')
 
         @route('/video_feed')
         def video_feed(self):
