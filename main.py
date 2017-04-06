@@ -68,4 +68,5 @@ class StreamingBuffer:
 
 
 if __name__ == '__main__':
+    StreamingBuffer.getInstance()
     StreamingAndWebApi()
