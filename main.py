@@ -21,6 +21,7 @@ class StreamingAndWebApi(object):
         def __init__(self):
             super(StreamingAndWebApi.WebApiView, self).__init__()  # this is python 2 so ...
             self.streamingBuffer = StreamingBuffer.getInstance()
+            print(self.streamingBuffer)
 
         @route('/')
         def index(self):
