@@ -51,6 +51,7 @@ class StreamingBuffer:
 
     def __del__(self):
         self.pushing = False
+        self.video.stop()
 
     @staticmethod
     def encode(frame):
