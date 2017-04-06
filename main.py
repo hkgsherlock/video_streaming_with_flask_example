@@ -15,10 +15,12 @@ class StreamingAndWebApi(object):
     def __init__(self):
         self.app = Flask(__name__)
         print(__name__)
-        self.WebApiView.register(self.app, route_prefix='/api/')
+        self.WebApiView.register(self.app)
         self.app.run(host='0.0.0.0', port=5000, debug=True)
 
     class WebApiView(FlaskView):
+        route_base = '/'
+
         def __init__(self):
             super(StreamingAndWebApi.WebApiView, self).__init__()  # this is python 2 so ...
             self.streamingBuffer = StreamingBuffer.getInstance()
