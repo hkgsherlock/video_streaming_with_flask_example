@@ -1,41 +1,75 @@
-#!/usr/bin/env python
-#
-# Project: Video Streaming with Flask
-# Author: Log0 <im [dot] ckieric [at] gmail [dot] com>
-# Date: 2014/12/21
-# Website: http://www.chioka.in/
-# Description:
-# Modified to support streaming out with webcams, and not just raw JPEGs.
-# Most of the code credits to Miguel Grinberg, except that I made a small tweak. Thanks!
-# Credits: http://blog.miguelgrinberg.com/post/video-streaming-with-flask
-#
-# Usage:
-# 1. Install Python dependencies: cv2, flask. (wish that pip install works like a charm)
-# 2. Run "python main.py".
-# 3. Navigate the browser to the local webpage.
-from flask import Flask, render_template, Response
-from camera import VideoCamera
+# http://www.chioka.in/python-live-video-streaming-example/
+# http://pythonhosted.org/Flask-Classy/
+# http://flask.pocoo.org/docs/0.12/quickstart/
 
-app = Flask(__name__)
-vid = VideoCamera()
+# RESTful!
 
-@app.route('/')
-def index():
-    return render_template('index.html')
+from Queue import Queue
+from threading import Thread
+
+import cv2
+import numpy as np
+from flask import Flask, Response
+from flask.ext.classy import FlaskView, route
+
+from imutils.video.pivideostream import PiVideoStream
 
 
-def gen(camera):
-    while True:
-        frame = camera.get_frame()
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n\r\n')
+class StreamingAndWebApi:
+    def __init__(self):
+        self.streamingBuffer = self.StreamingBuffer()
 
+        self.app = Flask(__name__)
+        self.WebApiView(self.streamingBuffer).register(self.app, route_base='/', subdomain='api')
+        self.app.run()
 
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen(vid),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+    class WebApiView(FlaskView):
+        def __init__(self, streamingBuffer):
+            super(StreamingAndWebApi.WebApiView, self).__init__()  # this is python 2 so ...
+            self.streamingBuffer = streamingBuffer
 
+        @route('/video_feed')
+        def video_feed(self):
+            return Response(self.streamingBuffer.gen(),
+                            mimetype='multipart/x-mixed-replace; boundary=frame')
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    class StreamingBuffer:
+        def __init__(self):
+            self.video = PiVideoStream(resolution=(854, 480), framerate=30)
+            self.video.start()
+
+            # self.pushing = True
+            # t = Thread(target=self.push(), args=())
+            # t.daemon = True
+            # t.start()
+
+            # self.frame_queue = Queue()
+            # self.last_frame = self.encode(np.zeros((854, 480, 3), np.uint8))
+
+        def __del__(self):
+            self.pushing = False
+
+        @staticmethod
+        def encode(frame):
+            return cv2.imencode('.jpg', frame)
+
+        # def push(self):
+        #     while self.pushing:
+        #         if self.frame_queue.qsize() > 128:
+        #             self.frame_queue.get_nowait()
+        #         frame = self.encode(self.frame_queue.get())
+        #         self.frame_queue.put(frame)
+        #         self.last_frame = frame
+
+        def gen(self):
+            while True:
+                # if self.frame_queue.empty():
+                #     frame = self.last_frame
+                # else:
+                #     frame = self.frame_queue.get()
+                frame = self.encode(self.video.read())
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n\r\n')
+
+        # def putNewFrame(self, cv2Frame):
+        #     self.frame_queue.put(cv2Frame)
