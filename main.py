@@ -30,28 +30,13 @@ class StreamingAndWebApi(object):
 
 class StreamingBuffer:
     _INSTANCE = None
+    _RUNNING = True
 
     @staticmethod
     def getInstance():
         if StreamingBuffer._INSTANCE is None:
             StreamingBuffer._INSTANCE = StreamingBuffer()
         return StreamingBuffer._INSTANCE
-
-    def __init__(self):
-        self.video = PiVideoStream(framerate=30)
-        self.video.start()
-
-        # self.pushing = True
-        # t = Thread(target=self.push(), args=())
-        # t.daemon = True
-        # t.start()
-
-        # self.frame_queue = Queue()
-        # self.last_frame = self.encode(np.zeros((854, 480, 3), np.uint8))
-
-    def __del__(self):
-        self.pushing = False
-        self.video.stop()
 
     @staticmethod
     def encode(frame):
@@ -66,17 +51,20 @@ class StreamingBuffer:
     #         self.last_frame = frame
 
     def gen(self):
-        while True:
+        video = PiVideoStream(framerate=30)
+        video.start()
+        while StreamingBuffer._RUNNING:
             # if self.frame_queue.empty():
             #     frame = self.last_frame
             # else:
             #     frame = self.frame_queue.get()
-            frame = self.encode(self.video.read())
+            frame = self.encode(video.read())
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame.tobytes() + b'\r\n\r\n')
 
             # def putNewFrame(self, cv2Frame):
             #     self.frame_queue.put(cv2Frame)
+        video.stop()
 
 
 if __name__ == '__main__':
