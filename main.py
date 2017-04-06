@@ -15,7 +15,7 @@ class StreamingAndWebApi(object):
     def __init__(self):
         self.app = Flask(__name__)
         print(__name__)
-        self.WebApiView.register(self.app)
+        self.WebApiView.register(self.app, route_prefix='/api/')
         self.app.run(host='0.0.0.0', port=5000, debug=True)
 
     class WebApiView(FlaskView):
