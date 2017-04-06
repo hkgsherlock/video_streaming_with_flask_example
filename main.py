@@ -38,7 +38,7 @@ class StreamingBuffer:
         return StreamingBuffer._INSTANCE
 
     def __init__(self):
-        self.video = PiVideoStream(resolution=(854, 480), framerate=30)
+        self.video = PiVideoStream(resolution=(960, 540), framerate=30)
         self.video.start()
 
         # self.pushing = True
