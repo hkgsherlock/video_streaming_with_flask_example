@@ -14,7 +14,7 @@ from imutils.video.pivideostream import PiVideoStream
 class StreamingAndWebApi(object):
     def __init__(self):
         self.app = Flask(__name__)
-        self.WebApiView.register(self.app, route_base='/')
+        self.WebApiView.register(self.app)
         self.app.run(host='0.0.0.0', port=5000, debug=True)
 
     class WebApiView(FlaskView):
