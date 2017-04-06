@@ -73,3 +73,6 @@ class StreamingAndWebApi:
 
         # def putNewFrame(self, cv2Frame):
         #     self.frame_queue.put(cv2Frame)
+
+if __name__ == '__main__':
+    StreamingAndWebApi()
